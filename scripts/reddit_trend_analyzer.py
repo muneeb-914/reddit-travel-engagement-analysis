@@ -1,7 +1,6 @@
 import praw
 import pandas as pd
 from datetime import datetime
-import matplotlib.pyplot as plt
 
 reddit = praw.Reddit(
     client_id='jKgfBmNXgaPya5PRry3Fow',
@@ -30,9 +29,27 @@ for post in subreddit.hot(limit=POST_LIMIT):
 
 df = pd.DataFrame(posts_data)
 
-df.to_csv('raw_reddit_data.csv', index=False)
+df ["created_utc"] = pd.to_datetime(df['created_utc'])
 
-print("Reddit data has been successfully fetched and saved to 'raw_reddit_data.csv'.")
+df ["date"] = df["created_utc"].dt.date
 
-plt.plot(df['created_utc'], df['score'], 'o')
-plt.xlabel('Creation Time')
+# df.to_csv('raw_reddit_data.csv', index=False)
+
+# print("Reddit data has been successfully fetched and saved to 'raw_reddit_data.csv'.")
+
+df ['engagement'] = df['score'] + df['num_comments']
+
+top_posts = df.sort_values(by="engagement",ascending=False).head(10)
+
+#print(top_posts[["title", "score", "num_comments", "engagement"]])
+
+
+# print(df[["score", "num_comments", "engagement"]].head())
+
+
+# print(df.dtypes)
+
+df['hours'] = df['created_utc'].dt.hour
+df['days_of_week'] = df['created_utc'].dt.day_name()
+
+print(df[['created_utc','hours', 'days_of_week']].head())
