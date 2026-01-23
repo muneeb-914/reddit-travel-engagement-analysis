@@ -31,3 +31,10 @@ df ["days_of_week"] = df["created_utc"].dt.day_name()
 print(df.groupby("hours")["engagement"].mean().sort_values(ascending=False))
 
 print(df.groupby("days_of_week")["engagement"].mean().sort_values(ascending=False))
+
+
+print(df["engagement"].describe())
+
+print(df[df["engagement"] > df["engagement"].mean()].shape[0])
+
+print(df.shape[0])
