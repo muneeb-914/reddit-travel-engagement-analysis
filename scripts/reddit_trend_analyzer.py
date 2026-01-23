@@ -1,10 +1,16 @@
 import praw
 import pandas as pd
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+client_id = os.getenv("client_id")
+client_secret = os.getenv("client_secret")
 
 reddit = praw.Reddit(
-    client_id='jKgfBmNXgaPya5PRry3Fow',
-    client_secret='QI6447ONGZ4-2-etfeUeaEO-H0xCpA',
+    client_id=client_id,
+    client_secret=client_secret,
     user_agent='Reddit Trend Analyzer by /u/Pleasant-Coyote-1014'
 )
 
@@ -29,27 +35,6 @@ for post in subreddit.hot(limit=POST_LIMIT):
 
 df = pd.DataFrame(posts_data)
 
-df ["created_utc"] = pd.to_datetime(df['created_utc'])
+df.to_csv('raw_reddit_data.csv', index=False)
 
-df ["date"] = df["created_utc"].dt.date
-
-# df.to_csv('raw_reddit_data.csv', index=False)
-
-# print("Reddit data has been successfully fetched and saved to 'raw_reddit_data.csv'.")
-
-df ['engagement'] = df['score'] + df['num_comments']
-
-top_posts = df.sort_values(by="engagement",ascending=False).head(10)
-
-#print(top_posts[["title", "score", "num_comments", "engagement"]])
-
-
-# print(df[["score", "num_comments", "engagement"]].head())
-
-
-# print(df.dtypes)
-
-df['hours'] = df['created_utc'].dt.hour
-df['days_of_week'] = df['created_utc'].dt.day_name()
-
-print(df[['created_utc','hours', 'days_of_week']].head())
+print("Reddit data has been successfully fetched and saved to 'raw_reddit_data.csv'.")
